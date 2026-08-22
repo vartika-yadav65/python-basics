@@ -1,0 +1,58 @@
+import json
+import os
+from datetime import datetime
+
+class Student:
+    def __init__(self, name, marks):
+        self.name = name
+        self.marks = marks
+        self.created_on = datetime.now().strftime("%Y-%m-%d %H:%M")
+
+    def result(self):
+        if self.marks >= 50:
+            status = "Pass"
+        else:
+            status = "Fail"
+        return f"{self.name} scored {self.marks} -> {status}"
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "marks": self.marks,
+            "created_on": self.created_on
+        }
+
+
+def save_student(student, filename="students.txt"):
+    with open(filename, "a") as f:
+        f.write(json.dumps(student.to_dict()) + "\n")
+    print("Saved to file!")
+
+
+def load_students(filename="students.txt"):
+    if not os.path.exists(filename):
+        print("No records found yet")
+        return []
+
+    students = []
+    with open(filename, "r") as f:
+        for line in f:
+            data = json.loads(line.strip())
+            students.append(data)
+    return students
+
+
+# --- main program ---
+s1 = Student("Rahul", 78)
+s2 = Student("Priya", 42)
+
+print(s1.result())
+print(s2.result())
+
+save_student(s1)
+save_student(s2)
+
+print("\nAll saved records:")
+records = load_students()
+for r in records:
+    print(r["name"], "-", r["marks"], "| added on", r["created_on"])
